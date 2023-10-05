@@ -1,0 +1,8 @@
+# ignore all .mat files
+*.mat
+
+# ignore dataset
+Data/
+
+# ignore generate old
+generate_23*/
