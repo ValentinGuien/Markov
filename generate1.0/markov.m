@@ -12,7 +12,7 @@ icowlist =1:ncows; % Les vaches numerotes 1,2,3,... qui vont etre regardees
 ncowlist = length(icowlist); 
 
 % Choix sur la taille des periodes
-periodsize = 30; % taille de la periode en minutes
+periodsize = 60; % taille de la periode en minutes
 nperiod = 1440/periodsize; % nombre de periodes par jour
 
 model = struct; % stockage des resultats

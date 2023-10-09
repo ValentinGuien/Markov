@@ -97,7 +97,7 @@ plotdistribstates(t,Mf,std_dist,meanmf,meanstddist)
 %% Rythme d'activite REAL
 all_AR_h = cell(1,ncows);
 for i=1:ncows
-    all_AR_h{i} = data_ar_healthy{i}.AR_healthy;
+    all_AR_h{i} = data_ar_healthy{i}.AR;
 end
 mean2 = @(x)(mean(x,2));
 all_mean_AR = cell2mat(cellfun(mean2,all_AR_h,'UniformOutput',false));

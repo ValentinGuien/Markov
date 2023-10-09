@@ -56,9 +56,8 @@ for icow = 1:ncows % Pour chaque vache
   % Enregistrement des donnees
   if saveresults
     data_ar_healthy.cow = cow;
-    data_ar_healthy.AR_healthy = AR_healthy;
+    data_ar_healthy.AR = AR_healthy;
     data_ar_healthy.validdates = validdates;
-    data_ar_healthy.rules = rules;
     filenamewrite = [dirwrite_healthy num2str(data_ar_healthy.cow) '.mat'];
     save(filenamewrite,'-struct','data_ar_healthy','-v7.3');
     disp(['Donnees enregistrees sur ' filenamewrite])
@@ -86,7 +85,7 @@ for i=1:nabnstates
 
     if saveresults
         data_ar_unhealty.state = state;
-        data_ar_unhealty.AR_uh = AR_uh;
+        data_ar_unhealty.AR = AR_uh;
         filenamewrite = [dirwrite_unhealthy char(data_ar_unhealty.state) '.mat'];
         save(filenamewrite,'-struct', 'data_ar_unhealty','-v7.3');
         disp(['Donnees enregistrees sur ' filenamewrite])

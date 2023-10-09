@@ -6,7 +6,7 @@ cows = [6601,6610,6612,6613,6621,6629,6633,6634,6637,6638,6643,6646,6656,6664,66
 ncows = length(cows); 
 
 
-periodsize = 30; % taille de la periode que l'on souhaite en minutes
+periodsize = 60; % taille de la periode que l'on souhaite en minutes
 nperiod = 1440/periodsize;
 nsd = 100; % Nombre de jours a simuler
 

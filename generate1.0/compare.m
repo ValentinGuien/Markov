@@ -44,54 +44,87 @@ for i=1:nabnstates
    filename = filenames(i,:);
    data_ar_uh{i} = load(filename);
 end
-%%
 %% TRAITEMENT
-all_AR_h = cell(1,ncows);
-for i=1:ncows
-    all_AR_h{i} = data_ar_healthy{i}.AR_healthy;
-end
-mean2 = @(x)(mean(x,2));
-all_mean_AR = cell2mat(cellfun(mean2,all_AR_h,'UniformOutput',false));
+meanar = @(x)(mean(x.AR,2));
+
+
+all_mean_AR = reshape(cell2mat(cellfun(meanar,data_ar_healthy,'UniformOutput',false)),24,ncows);
 mean_all_AR = mean(all_mean_AR,2);
-std2 = @(x)(std(x,0,2));
-all_std_AR = cell2mat(cellfun(std2,all_AR_h,'UniformOutput',false));
+stdar = @(x)(std(x.AR,0,2));
+all_std_AR = reshape(cell2mat(cellfun(stdar,data_ar_healthy,'UniformOutput',false)),24,ncows);
 std_all_AR = mean(all_std_AR,2);
 %%
-% S = cell(ncows,1);
-% myfunc = @(X)(euclidiandist(X,mean_all_AR));
-% for icow = 1:ncows
-%     ndays = size(all_AR_h{icow},2);
-
-%     s = zeros(ndays,1);
-%     for iday = 1:ndays
-%         s(iday) = myfunc(all_AR_h{icow}(:,iday));
-%     end
-%     S{icow} = s;
-% end
-%% 
-figure;
-S = getprobdist(mean_all_AR,all_AR_h,@euclidiandist,1);
-
-subplot(1,2,1); g = histogram(S);
-    xlabel("Bin Centres"); ylabel("Bin Counts");
- 
-    g.BinCounts = g.BinCounts/sum(g.BinCounts);
-       Bin_Counts = g.BinCounts;
-    Bin_Width = g.BinWidth;
-    Bin_Centres = g.BinEdges(2:end) - Bin_Width/2;
-
-    subplot(1,2,2); plot(Bin_Centres,Bin_Counts);
-    xlabel("Bin Centres"); ylabel("Bin Counts");
-    hold on;
+t = 1:24;
+meanoestrus = mean(data_ar_uh{1}.AR,2);
+d = abs(meanoestrus-mean_all_AR);
+[~,I] = sort(d);
+hoursdiff = sort(I(end-4:end));
 %%
-S = getprobdist(mean_all_AR,data_ar_uh{8},@euclidiandist,0);
-subplot(1,2,1); g = histogram(S);
-    xlabel("Bin Centres"); ylabel("Bin Counts");
+discrete = 0;
+ntype = 'pdf';
+hours = [1:6,24];
+% NO : hamming, jaccard
+measures = {"euclidean",@dtw,"cityblock","cosine","minkowski",...
+    "chebychev","correlation","spearman"};
+measuresnames = ["euclidean","dtw","manhattan","cosine","minkowski, p=3",...
+    "chebychev","correlation","spearman"];
+measureslen = size(measures,2);
 
-    g.BinCounts = g.BinCounts/sum(g.BinCounts);
-        Bin_Counts = g.BinCounts;
-    Bin_Width = g.BinWidth;
-    Bin_Centres = g.BinEdges(2:end) - Bin_Width/2;
+figure;
 
-    subplot(1,2,2); plot(Bin_Centres,Bin_Counts/2);
-    xlabel("Bin Centres"); ylabel("Bin Counts");
+for im = 1:measureslen
+   measure = measures{im};
+   measurename = measuresnames(im)
+    
+   fun = @(x)(getalldist(mean_all_AR,x.AR,hours,measure)');
+   cellfunmat = @(C)(cell2mat(cellfun(fun,C,'UniformOutput',false)));
+   
+   Sh = cellfunmat(data_ar_healthy);
+   Suh = fun(data_ar_uh{1});
+   
+   
+   subplot(ceil(measureslen/2),2,im)
+   
+   if discrete
+       [N1,edges1] = histcounts(Sh,'Normalization', ntype);
+        width1 = edges1(2)-edges1(1);
+        centres1 = edges1(2:end)-width1/2;
+        plot(centres1,N1);
+        hold on
+        [N2,edges2] = histcounts(Suh,'Normalization', ntype);
+        width2 = edges2(2)-edges2(1);
+        centres2 = edges2(2:end)-width2/2;
+        plot(centres2,N2);
+   else
+        ksdensity(Sh)
+        hold on
+        ksdensity(Suh)
+   end
+ 
+   title(measurename);
+   xlabel('distance')
+   ylabel('density')
+   
+end
+
+% Chebychev peut etre interessant mais provoque des courbes bizarres
+% tester Minkowski avec moins d'heures
+
+%% Comparaison discrete
+ntype = 'pdf';
+[N1,edges1,bin1] = histcounts(S1,'Normalization', ntype);
+width1 = edges1(2)-edges1(1);
+centres1 = edges1(2:end)-width1/2;
+plot(centres1,N1);
+hold on
+[N2,edges2,bin2] = histcounts(S2,'Normalization', ntype);
+width2 = edges2(2)-edges2(1);
+centres2 = edges2(2:end)-width2/2;
+plot(centres2,N2);
+xlabel('Integer value');
+ylabel('Probability');
+ %%
+ksdensity(S1)
+hold on
+ksdensity(S2)
+ 
