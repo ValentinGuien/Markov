@@ -58,11 +58,9 @@ t = 1:24;
 meanoestrus = mean(data_ar_uh{1}.AR,2);
 d = abs(meanoestrus-mean_all_AR);
 [~,I] = sort(d);
-hoursdiff = sort(I(end-4:end));
 %%
 discrete = 0;
-ntype = 'pdf';
-hours = [1:6,24];
+ntype = 'probability';
 % NO : hamming, jaccard
 measures = {"euclidean",@dtw,"cityblock","cosine","minkowski",...
     "chebychev","correlation","spearman"};
@@ -70,11 +68,14 @@ measuresnames = ["euclidean","dtw","manhattan","cosine","minkowski, p=3",...
     "chebychev","correlation","spearman"];
 measureslen = size(measures,2);
 
+for nhours = [3,5,7,10,15,20,24]
+hours = sort(I(end-nhours+1:end))
+hours = [1:6];
 figure;
 
 for im = 1:measureslen
    measure = measures{im};
-   measurename = measuresnames(im)
+   measurename = measuresnames(im);
     
    fun = @(x)(getalldist(mean_all_AR,x.AR,hours,measure)');
    cellfunmat = @(C)(cell2mat(cellfun(fun,C,'UniformOutput',false)));
@@ -102,29 +103,42 @@ for im = 1:measureslen
    end
  
    title(measurename);
+   legend("sane","oestrus")
    xlabel('distance')
    ylabel('density')
    
 end
 
+sgtitle(['Top ' num2str(nhours) 'hours'])
+
+end
 % Chebychev peut etre interessant mais provoque des courbes bizarres
 % tester Minkowski avec moins d'heures
 
-%% Comparaison discrete
-ntype = 'pdf';
-[N1,edges1,bin1] = histcounts(S1,'Normalization', ntype);
-width1 = edges1(2)-edges1(1);
-centres1 = edges1(2:end)-width1/2;
-plot(centres1,N1);
-hold on
-[N2,edges2,bin2] = histcounts(S2,'Normalization', ntype);
-width2 = edges2(2)-edges2(1);
-centres2 = edges2(2:end)-width2/2;
-plot(centres2,N2);
-xlabel('Integer value');
-ylabel('Probability');
- %%
-ksdensity(S1)
-hold on
-ksdensity(S2)
- 
+%% Chebyshev ??
+% hours = 1:24;
+% 
+% distchebychev = @(X)(max(abs(mean_all_AR-X.AR)));
+% [dhc,Ihc] = cellfun(distchebychev,data_ar_healthy,'UniformOutput',false);
+% dh = cell2mat(reshape(dhc,1,ncows));
+% Ih = cell2mat(reshape(Ihc,1,ncows));
+% [duhc,Iuhc] = cellfun(distchebychev,data_ar_uh,'UniformOutput',false);
+% duh = cell2mat(reshape(duhc,1,size(duhc,1)));
+% Iuh = cell2mat(reshape(Iuhc,1,size(Iuhc,1)));
+% figure
+% for h = 1:24
+%     subplot(5,5,h)
+%     indexh = find(Ih==h);
+%     dh_h = dh(indexh);
+%     indexuh = find(Iuh==h);
+%     duh_h = dh(indexuh);
+%     ksdensity(dh_h);
+%     hold on
+%     ksdensity(duh_h);
+%     title(['h = ' num2str(h)])
+%    
+% end
+% figure 
+% histogram(Ih,'Normalization','probability')
+% hold on
+% histogram(Iuh,'Normalization','probability')

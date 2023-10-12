@@ -157,7 +157,7 @@ figure
 hold on
 icowlist = 1:3;
 for icow = icowlist
-    ARcow = data_ar_healthy{icow}.AR_healthy;
+    ARcow = data_ar_healthy{icow}.AR;
     meanARcow = mean(ARcow,2);
     plot(t, meanARcow, 'LineWidth', 1,'LineWidth',2);
 end

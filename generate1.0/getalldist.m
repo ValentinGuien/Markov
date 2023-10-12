@@ -6,4 +6,5 @@ function S = getalldist(mean_ar,ar,hours,measure)
     else
         S = pdist2(mean_ar(hours)',ar(hours,:)',measure);
     end
+    %S = S/length(hours);
 end
