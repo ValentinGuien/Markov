@@ -68,9 +68,14 @@ measuresnames = ["euclidean","dtw","manhattan","cosine","minkowski, p=3",...
     "chebychev","correlation","spearman"];
 measureslen = size(measures,2);
 
-for nhours = [3,5,7,10,15,20,24]
-hours = sort(I(end-nhours+1:end))
-hours = [1:6];
+for nhours = [3,5,7,10,15,20,24,-1]
+
+if nhours == -1
+    hours = [1:5]
+else
+    hours = sort(I(end-nhours+1:end))
+end
+
 figure;
 
 for im = 1:measureslen
@@ -108,9 +113,11 @@ for im = 1:measureslen
    ylabel('density')
    
 end
-
-sgtitle(['Top ' num2str(nhours) 'hours'])
-
+if nhours == -1
+    sgtitle(['From 0:00 to 5:00'])
+else
+    sgtitle(['Top ' num2str(nhours) 'hours'])
+end
 end
 % Chebychev peut etre interessant mais provoque des courbes bizarres
 % tester Minkowski avec moins d'heures

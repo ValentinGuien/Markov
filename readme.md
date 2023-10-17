@@ -11,6 +11,8 @@ a l’aide d’un processus markovien </h1> <br>
 
 ## Introduction
 
+Le jeu de données utilisé est le dataset LongHealth de Herbipole
+
 L'ensemble des fichiers et des fonctions permet d'établir des modèles de Markov adaptés à chaque vache, d'en faire des simulations, et de comparer les résultats. Les codes sont réalisés sous le langage Matlab. Hormis *affichage.m*, les fichiers script écrivent les résultats dans le dossier *Dataprocess/*. Il est possible dans chaque script de modifier la valeur du paramètre *saveresults* pour ne pas faire la sauvegarde.
 
 ## Arborescence

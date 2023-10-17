@@ -35,7 +35,7 @@ meanoestrus = mean(data_ar_uh{1}.AR,2);
 d = abs(meanoestrus-mean_all_AR);
 [~,I] = sort(d);
 %%
-hours = [24,1:5];
+hours = [1:5];
 fun = @(x)(getalldist(mean_all_AR,x.AR,hours,"chebychev")');
 cellfunmat = @(C)(cell2mat(cellfun(fun,C,'UniformOutput',false)));
 
@@ -60,6 +60,7 @@ plot(xi,f,[threshold,threshold],[0,f(TF)],'r--')
 
 groupA = tab(tab.d < threshold,(1:2));
 groupB = tab(tab.d > threshold,(1:2));
+proportion = size(groupA,1)/size(tab,1);
 %% Cow ?
 pcows = zeros(ncows,1,2);
 labels = cell(ncows,1);
@@ -72,9 +73,70 @@ for icow = 1:ncows
     pB = nB/(nA+nB);
     pcows(icow,1,:) = [pA,pB];
 end
-plotBarStackGroups(pcows,labels)
+[~,I2] = sort(pcows(:,:,1));
+h = plotBarStackGroups(pcows(I2,:,:),labels(I2))
+hold on
+plot([h(1).XData(1)-1 h(1).XData(end)+1],[0.5 0.5],'--')
+plot([h(1).XData(1)-1 h(1).XData(end)+1],[proportion proportion],'--')
 legend("Group A","Group B")
+title("Proportion of membership group A/B for each cow")
 
 %% Date period ?
 
+%%
+
 %% Date weekend ?
+
+nA = sum(isweekend(groupA.date));
+nB = sum(isweekend(groupB.date));
+pA = nA/size(groupA,1);
+pB = nB/size(groupB,1);
+disp([num2str(pA*100) '% of cow/day in group A are weekends'])
+disp([num2str(pB*100) '% of cow/day in group A are weekends'])
+%%
+weekends = tab(isweekend(tab.date),(1:2));
+weekendsA = intersect(weekends,groupA(:,(1:2)));
+weekendsB = intersect(weekends,groupB(:,(1:2)));
+pA = size(weekendsA,1)/size(weekends,1);
+pB = size(weekendsB,1)/size(weekends,1);
+disp([num2str(pA*100) '% of weekends are in group A'])
+disp([num2str(pB*100) '% of weekends are in group B'])
+%% Daylight ?
+alldays = unique(tab.date);
+nalldays = size(alldays,1);
+
+s = zeros(nalldays,1);
+for i = 1:nalldays
+    s(i) = sum(tab.date==alldays(i));
+end
+
+alldays = alldays(s>=10);
+nalldays = size(alldays,1);
+
+pdays = zeros(nalldays,1,2);
+labels = cell(nalldays,1);
+for iday = 1:nalldays
+    day = alldays(iday);
+    labels{iday} = iday;
+    nA = sum(groupA.date==day);
+    nB = sum(groupB.date==day);
+    pA = nA/(nA+nB);
+    pB = nB/(nA+nB);
+    pdays(iday,1,:) = [pA,pB];
+end
+h = plotBarStackGroups(pdays)
+h(2).FaceColor = [1 1 1];
+h(2).EdgeColor = [1 1 1];
+h(1).FaceColor = [0 0 0];
+ax = gca;
+
+title("Proportion of membership group A/B for each date")
+hold on
+plot([h(1).XData(1) h(1).XData(end)],[0.5 0.5],'--')
+plot([h(1).XData(1) h(1).XData(end)],[proportion proportion],'--')
+plot([78 78],[0 1],'--r')
+plot([124 124],[0 1],'--r')
+ax.XTick = [1 39 78 124 149];
+ax.XTickLabel = {'26 Oct','07 Dec','18 Jan','16 Mar','17 Apr'};
+legend("Group A","Group B" )
+%%

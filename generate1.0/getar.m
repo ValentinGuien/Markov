@@ -34,6 +34,17 @@ rules.acidosis = [-1;2];
 rules.other_disease = [-2;1];
 rules.disturbance = [0;1];
 rules.mixing = [0;1];
+% 
+% bigrules = [-2;7];
+% rules.oestrus = bigrules;
+% rules.calving = bigrules;
+% rules.lameness = bigrules;
+% rules.mastitis = bigrules;
+% rules.LPS = bigrules;
+% rules.acidosis = bigrules;
+% rules.other_disease = bigrules;
+% rules.disturbance = bigrules;
+% rules.mixing = bigrules;
 %%
 data.date = datetime(data.date,'InputFormat','yyyy-MM-dd');
 abn_data = data(data.OK~=1,:); % table des donnees ou les etats sont anormaux

@@ -12,7 +12,7 @@ NumGroupsPerAxis = size(stackData, 1);
 NumStacksPerGroup = size(stackData, 2);
 % Count off the number of bins
 groupBins = 1:NumGroupsPerAxis;
-MaxGroupWidth = 0.65; % Fraction of 1. If 1, then we have all bars in groups touching
+MaxGroupWidth = 1; % Fraction of 1. If 1, then we have all bars in groups touching
 groupOffset = MaxGroupWidth/NumStacksPerGroup;
 figure
     hold on; 
@@ -34,5 +34,7 @@ hold off;
 set(gca,'XTickMode','manual');
 set(gca,'XTick',1:NumGroupsPerAxis);
 set(gca,'XTickLabelMode','manual');
-set(gca,'XTickLabel',groupLabels);
+if nargin == 2
+    set(gca,'XTickLabel',groupLabels);
+end
 end 
