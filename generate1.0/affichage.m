@@ -141,6 +141,14 @@ for i=1:3
 end
 axis([t(1) t(end) -inf inf])
 xticks(t);
+set(gcf,'Color',[1 1 1])
+ax = gca;
+ax.FontSize=20;
+xlabel('hours')
+xticks(t);
+axis([t(1) t(end) -inf inf])
+ylabel('activity level')
+title('3 different average activity levels')
 %% 3 single ar of a cow simulated
 ARcowsim = all_AR_h_sim{1};
 lineform = ["-.","--",":"];
@@ -171,7 +179,7 @@ ylabel('activity level')
 title('3 different average activity levels')
 %%
 for i=1:8
-    AR_uh = data_ar_uh{i}.AR_uh;
+    AR_uh = data_ar_uh{i}.AR;
     plot(t, mean(AR_uh,2), 'LineWidth', 1,'LineWidth',2,"DisplayName",data_ar_uh{i}.state);
 end
 legend()

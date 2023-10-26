@@ -35,12 +35,24 @@ meanoestrus = mean(data_ar_uh{1}.AR,2);
 d = abs(meanoestrus-mean_all_AR);
 [~,I] = sort(d);
 %%
-hours = [1:5];
+removedatesbool = 1;
+
+ startremovedate = datetime('18-Jan-2019');
+ endremovedate = datetime('16-Mar-2019');
+
+hours = [1:5,24];
 fun = @(x)(getalldist(mean_all_AR,x.AR,hours,"chebychev")');
 cellfunmat = @(C)(cell2mat(cellfun(fun,C,'UniformOutput',false)));
 
 Sh = cellfunmat(data_ar_healthy);
 Suh = fun(data_ar_uh{1});
+
+   if removedatesbool
+       removedates = @(x)(startremovedate > x.validdates | ...
+       x.validdates > endremovedate);
+       Idate = cell2mat(cellfun(removedates,data_ar_healthy,'UniformOutput',false));
+       Sh = Sh(Idate);
+   end
 %%
 tab = table('Size',[length(Sh),3],'VariableType',["double","datetime","double"],'VariableNames',["cow","date","d"]);
 tab.d = Sh;
@@ -56,6 +68,7 @@ end
 [f,xi] = ksdensity(Sh,'NumPoints',300);
 TF = islocalmin(f);
 threshold = xi(TF);
+figure
 plot(xi,f,[threshold,threshold],[0,f(TF)],'r--')
 
 groupA = tab(tab.d < threshold,(1:2));

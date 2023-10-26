@@ -44,7 +44,7 @@ rules.mixing = [0;1];
 % rules.acidosis = bigrules;
 % rules.other_disease = bigrules;
 % rules.disturbance = bigrules;
-% rules.mixing = bigrules;
+% rules.mixing = [-2,14];
 %%
 data.date = datetime(data.date,'InputFormat','yyyy-MM-dd');
 abn_data = data(data.OK~=1,:); % table des donnees ou les etats sont anormaux
@@ -76,8 +76,7 @@ for icow = 1:ncows % Pour chaque vache
 end
 
 %% Vaches non saines
-cows_uh = unique(abn_data.cow); % Les vaches ayant des donnees anormales
-ncows_uh = length(cows_uh); 
+
 abn_states = ["oestrus","calving",...
         "lameness","mastitis","LPS","other_disease",...
         "accidents","mixing"]; % Les etats anormaux possibles
@@ -92,11 +91,15 @@ for i=1:nabnstates
     numstate = abn_states_num(i);
     Dstate = abn_data(table2array(abn_data(:,abn_data.Properties.VariableNames{numstate}))==1,:);
     AR_uh = reshape(Dstate.ACTIVITY_LEVEL,24,height(Dstate)/24);
-    
+    datescowsuh = unique(Dstate(:,1:2),'stable');
+    cowsuh = datescowsuh.cow;
+    datesuh = datescowsuh.date;
 
     if saveresults
         data_ar_unhealty.state = state;
         data_ar_unhealty.AR = AR_uh;
+        data_ar_unhealty.cows = cowsuh;
+        data_ar_unhealty.dates = datesuh;
         filenamewrite = [dirwrite_unhealthy char(data_ar_unhealty.state) '.mat'];
         save(filenamewrite,'-struct', 'data_ar_unhealty','-v7.3');
         disp(['Donnees enregistrees sur ' filenamewrite])
