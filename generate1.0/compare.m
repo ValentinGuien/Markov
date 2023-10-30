@@ -68,9 +68,9 @@ ntype = 'probability';
 % NO : hamming, jaccard
 multicheb2 = @(x,y)(multicheb(x,y,2));
 multicheb3 = @(x,y)(multicheb(x,y,3));
-multicheb6 = @(x,y)(multicheb(x,y,6));
+multicheb5 = @(x,y)(multicheb(x,y,5));
 
-measures = {multicheb6,"chebychev",multicheb2,multicheb3};
+measures = {multicheb5,"chebychev",multicheb2,multicheb3};
 measuresnames = ["multicheb5","chebychev","multicheb2","multicheb3"];
 measureslen = size(measures,2);
 oestrusdates = data_ar_uh{1}.dates;
